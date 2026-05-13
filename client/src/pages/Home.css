@@ -1,0 +1,61 @@
+.home {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.home h1 {
+  font-size: 36px;
+  color: #e0e0e0;
+  margin: 0;
+}
+
+.home-subtitle {
+  color: #888;
+  margin: 8px 0 32px;
+}
+
+.challenge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.challenge-card {
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  transition: border-color 0.15s;
+}
+
+.challenge-card:hover {
+  border-color: #6c63ff;
+}
+
+.challenge-thumb {
+  aspect-ratio: 4 / 3;
+  background: #2a2a2a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.challenge-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.challenge-title {
+  padding: 12px 12px 4px;
+  color: #e0e0e0;
+  font-weight: 600;
+}
+
+.challenge-size {
+  padding: 0 12px 12px;
+  color: #888;
+  font-size: 13px;
+}

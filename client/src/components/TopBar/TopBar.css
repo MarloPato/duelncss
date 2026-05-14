@@ -1,0 +1,122 @@
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+  padding: 0 var(--space-md);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.topbar-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.topbar-logo {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--color-accent);
+  letter-spacing: -0.5px;
+}
+
+.topbar-center {
+  flex: 1;
+  text-align: center;
+  min-width: 0;
+}
+
+.topbar-challenge {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.topbar-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-md);
+  min-width: 0;
+}
+
+.topbar-stats {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.topbar-score {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.topbar-chars {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.topbar-submit {
+  padding: var(--space-xs) var(--space-md);
+  background: var(--color-accent);
+  color: var(--color-bg);
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  transition: background var(--transition-fast);
+}
+
+.topbar-submit:hover {
+  background: var(--color-accent-hover);
+}
+
+.topbar-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.topbar-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.topbar-link {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  transition: color var(--transition-fast);
+}
+
+.topbar-link:hover {
+  color: var(--color-text);
+}
+
+.topbar-user {
+  font-size: 13px;
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.topbar-logout {
+  padding: var(--space-xs) var(--space-sm);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  font-size: 12px;
+  transition: all var(--transition-fast);
+}
+
+.topbar-logout:hover {
+  color: var(--color-text);
+  border-color: var(--color-text-muted);
+}

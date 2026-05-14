@@ -1,7 +1,7 @@
-import { useRef, useEffect, useImperativeHandle, forwardRef } from 'react';
+import { useRef, useImperativeHandle, forwardRef } from 'react';
 import './Preview.css';
 
-const Preview = forwardRef(function Preview({ css, viewportW, viewportH }, ref) {
+const Preview = forwardRef(function Preview({ css, html, viewportW, viewportH }, ref) {
   const iframeRef = useRef(null);
 
   useImperativeHandle(ref, () => ({
@@ -11,23 +11,19 @@ const Preview = forwardRef(function Preview({ css, viewportW, viewportH }, ref) 
   const srcdoc = `<!DOCTYPE html>
 <html>
 <head><style>${css}</style></head>
-<body></body>
+<body>${html || ''}</body>
 </html>`;
 
   return (
-    <div className="preview-container">
-      <div className="preview-label">Your Output</div>
-      <div className="preview-frame" style={{ width: viewportW, height: viewportH }}>
-        <iframe
-          ref={iframeRef}
-          srcDoc={srcdoc}
-          title="preview"
-          sandbox="allow-same-origin"
-          width={viewportW}
-          height={viewportH}
-        />
-      </div>
-    </div>
+    <iframe
+      ref={iframeRef}
+      className="preview-iframe"
+      srcDoc={srcdoc}
+      title="preview"
+      sandbox="allow-same-origin"
+      width={viewportW}
+      height={viewportH}
+    />
   );
 });
 

@@ -1,0 +1,33 @@
+.palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.palette-pill {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 100px;
+  transition: border-color var(--transition-fast);
+}
+
+.palette-pill:hover {
+  border-color: var(--color-accent);
+}
+
+.palette-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.palette-hex {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-accent);
+}

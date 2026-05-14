@@ -5,14 +5,14 @@ const router = Router();
 
 router.get('/', async (req, res) => {
   const result = await pool.query(
-    'SELECT id, title, slug, target_image, viewport_w, viewport_h, created_at FROM challenges ORDER BY id'
+    'SELECT id, title, slug, target_image, viewport_w, viewport_h, palette, created_at FROM challenges ORDER BY id'
   );
   res.json(result.rows);
 });
 
 router.get('/:slug', async (req, res) => {
   const result = await pool.query(
-    'SELECT id, title, slug, target_html, target_image, viewport_w, viewport_h FROM challenges WHERE slug = $1',
+    'SELECT id, title, slug, target_html, target_image, viewport_w, viewport_h, palette, starter_html FROM challenges WHERE slug = $1',
     [req.params.slug]
   );
 

@@ -1,6 +1,9 @@
+import { useAuth } from '../../hooks/useAuth';
 import './Leaderboard.css';
 
 export default function Leaderboard({ entries, type }) {
+  const { user } = useAuth();
+
   return (
     <table className="leaderboard-table">
       <thead>
@@ -14,7 +17,10 @@ export default function Leaderboard({ entries, type }) {
       </thead>
       <tbody>
         {entries.map((entry, i) => (
-          <tr key={entry.username + i}>
+          <tr
+            key={entry.username + i}
+            className={user && user.username === entry.username ? 'leaderboard-self' : ''}
+          >
             <td>{i + 1}</td>
             <td>{entry.username}</td>
             <td>{Number(type === 'overall' ? entry.total_score : entry.score).toFixed(1)}</td>

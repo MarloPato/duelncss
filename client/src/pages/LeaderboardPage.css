@@ -1,33 +1,43 @@
 .leaderboard-page {
   max-width: 700px;
   margin: 0 auto;
-  padding: 40px 20px;
+  padding: var(--space-xl) var(--space-md);
 }
 
 .leaderboard-page h1 {
-  color: #e0e0e0;
-  margin: 0 0 24px;
+  font-family: var(--font-mono);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0 0 var(--space-lg);
 }
 
 .leaderboard-tabs {
   display: flex;
-  gap: 8px;
-  margin-bottom: 20px;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
   flex-wrap: wrap;
 }
 
 .leaderboard-tabs button {
-  padding: 6px 16px;
-  border: 1px solid #444;
-  border-radius: 20px;
+  padding: var(--space-xs) var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   background: transparent;
-  color: #aaa;
-  font-size: 13px;
-  cursor: pointer;
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  transition: all var(--transition-fast);
+}
+
+.leaderboard-tabs button:hover {
+  color: var(--color-text);
+  border-color: var(--color-text-muted);
 }
 
 .leaderboard-tabs button.active {
-  background: #6c63ff;
-  border-color: #6c63ff;
-  color: #fff;
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-bg);
+  font-weight: 600;
 }

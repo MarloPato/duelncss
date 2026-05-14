@@ -1,0 +1,1 @@
+ALTER TABLE challenges ADD COLUMN palette TEXT[] NOT NULL DEFAULT '{}';

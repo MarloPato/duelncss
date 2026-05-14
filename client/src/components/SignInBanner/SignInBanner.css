@@ -1,0 +1,18 @@
+.signin-banner {
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.signin-banner a {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.signin-banner a:hover {
+  text-decoration: underline;
+}

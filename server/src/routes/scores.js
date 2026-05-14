@@ -5,21 +5,21 @@ const authMiddleware = require('../middleware/auth');
 const router = Router();
 
 router.post('/', authMiddleware, async (req, res) => {
-  const { challengeId, cssCode, score, charCount } = req.body;
+  const { challengeId, cssCode, htmlCode, score, charCount } = req.body;
   const userId = req.user.id;
 
-  if (challengeId == null || !cssCode || score == null || charCount == null) {
-    return res.status(400).json({ error: 'challengeId, cssCode, score, and charCount are required' });
+  if (challengeId == null || score == null || charCount == null) {
+    return res.status(400).json({ error: 'challengeId, score, and charCount are required' });
   }
 
   const result = await pool.query(
-    `INSERT INTO submissions (user_id, challenge_id, css_code, score, char_count)
-     VALUES ($1, $2, $3, $4, $5)
+    `INSERT INTO submissions (user_id, challenge_id, css_code, html_code, score, char_count)
+     VALUES ($1, $2, $3, $4, $5, $6)
      ON CONFLICT (user_id, challenge_id)
-     DO UPDATE SET css_code = $3, score = $4, char_count = $5, submitted_at = now()
-       WHERE submissions.score < $4 OR (submissions.score = $4 AND submissions.char_count > $5)
+     DO UPDATE SET css_code = $3, html_code = $4, score = $5, char_count = $6, submitted_at = now()
+       WHERE submissions.score < $5 OR (submissions.score = $5 AND submissions.char_count > $6)
      RETURNING id, score, char_count`,
-    [userId, challengeId, cssCode, score, charCount]
+    [userId, challengeId, cssCode || '', htmlCode || '', score, charCount]
   );
 
   const row = result.rows[0];
@@ -59,9 +59,17 @@ router.get('/overall', async (req, res) => {
   res.json(result.rows);
 });
 
+router.get('/me', authMiddleware, async (req, res) => {
+  const result = await pool.query(
+    'SELECT challenge_id, score, char_count FROM submissions WHERE user_id = $1',
+    [req.user.id]
+  );
+  res.json(result.rows);
+});
+
 router.get('/me/:challengeId', authMiddleware, async (req, res) => {
   const result = await pool.query(
-    'SELECT id, score, char_count, css_code, submitted_at FROM submissions WHERE user_id = $1 AND challenge_id = $2',
+    'SELECT id, score, char_count, css_code, html_code, submitted_at FROM submissions WHERE user_id = $1 AND challenge_id = $2',
     [req.user.id, req.params.challengeId]
   );
   res.json(result.rows[0] || null);

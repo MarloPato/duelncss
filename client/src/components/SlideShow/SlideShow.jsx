@@ -1,71 +1,72 @@
-import { useState, useRef, useCallback } from 'react';
+import { useRef, useCallback } from 'react';
 import './SlideShow.css';
 
 export default function SlideShow({ targetSrc, viewportW, viewportH, children, enabled }) {
-  const [position, setPosition] = useState(50);
   const containerRef = useRef(null);
-  const dragging = useRef(false);
+  const userRef = useRef(null);
+  const lineRef = useRef(null);
+  const rafId = useRef(null);
 
-  const updatePosition = useCallback((clientX) => {
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    const x = clientX - rect.left;
-    const pct = Math.max(0, Math.min(100, (x / rect.width) * 100));
-    setPosition(pct);
+  const onMouseMove = useCallback((e) => {
+    if (!enabled) return;
+    const clientX = e.clientX;
+    if (rafId.current) return;
+
+    rafId.current = requestAnimationFrame(() => {
+      rafId.current = null;
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (!rect || !userRef.current) return;
+
+      const x = clientX - rect.left;
+      const pct = Math.max(0, Math.min(100, (x / rect.width) * 100));
+      const clipRight = 100 - pct;
+
+      userRef.current.style.clipPath = `inset(0 ${clipRight}% 0 0)`;
+
+      if (lineRef.current) {
+        lineRef.current.style.left = `${pct}%`;
+        lineRef.current.style.opacity = '1';
+      }
+    });
+  }, [enabled]);
+
+  const onMouseLeave = useCallback(() => {
+    if (rafId.current) {
+      cancelAnimationFrame(rafId.current);
+      rafId.current = null;
+    }
+    if (userRef.current) {
+      userRef.current.style.clipPath = '';
+    }
+    if (lineRef.current) {
+      lineRef.current.style.opacity = '0';
+    }
   }, []);
-
-  const onPointerDown = useCallback((e) => {
-    e.preventDefault();
-    dragging.current = true;
-    e.target.setPointerCapture(e.pointerId);
-    updatePosition(e.clientX);
-  }, [updatePosition]);
-
-  const onPointerMove = useCallback((e) => {
-    if (!dragging.current) return;
-    updatePosition(e.clientX);
-  }, [updatePosition]);
-
-  const onPointerUp = useCallback(() => {
-    dragging.current = false;
-  }, []);
-
-  const clipRight = 100 - (enabled ? position : 50);
 
   return (
     <div
       ref={containerRef}
-      className="slideshow"
+      className={`slideshow ${enabled ? 'slideshow--active' : ''}`}
       style={{ width: viewportW, height: viewportH }}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
     >
-      <img
-        className="slideshow-target"
-        src={targetSrc}
-        alt="target"
-        width={viewportW}
-        height={viewportH}
-        draggable={false}
-      />
+      {enabled && (
+        <img
+          className="slideshow-target"
+          src={targetSrc}
+          alt="target"
+          width={viewportW}
+          height={viewportH}
+          draggable={false}
+        />
+      )}
 
-      <div
-        className="slideshow-user"
-        style={enabled ? { clipPath: `inset(0 ${clipRight}% 0 0)` } : undefined}
-      >
+      <div ref={userRef} className="slideshow-user">
         {children}
       </div>
 
-      {enabled && (
-        <div
-          className="slideshow-slider"
-          style={{ left: `${position}%` }}
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-        >
-          <div className="slideshow-line" />
-          <div className="slideshow-grip" />
-        </div>
-      )}
+      {enabled && <div ref={lineRef} className="slideshow-line" />}
     </div>
   );
 }

@@ -16,6 +16,15 @@ import { compareCanvases, loadImageToCanvas, captureIframeToCanvas } from '../sc
 import './Challenge.css';
 
 const EDITOR_SPLIT_KEY = 'duelncss-editor-split';
+const SLIDESHOW_KEY = 'duelncss-slideshow';
+
+function getSlideShowDefault() {
+  try {
+    const saved = localStorage.getItem(SLIDESHOW_KEY);
+    if (saved !== null) return saved === 'true';
+  } catch { /* ignored */ }
+  return true;
+}
 
 function getEditorLayout() {
   try {
@@ -37,7 +46,7 @@ export default function Challenge() {
   const [lastScore, setLastScore] = useState(null);
   const [highScore, setHighScore] = useState(null);
   const [comparing, setComparing] = useState(false);
-  const [slideShow, setSlideShow] = useState(true);
+  const [slideShow, setSlideShow] = useState(getSlideShowDefault);
   const [confirmAction, setConfirmAction] = useState(null);
 
   useEffect(() => {
@@ -174,7 +183,7 @@ export default function Challenge() {
             <span className="col-header-right">{charCount} characters</span>
           </div>
           <PanelGroup
-            direction="vertical"
+            orientation="vertical"
             onLayout={handleEditorLayoutChange}
             className="editor-panels"
           >
@@ -202,7 +211,11 @@ export default function Challenge() {
             <span className="col-header-label">Output</span>
             <button
               className={`slideshow-toggle ${slideShow ? 'slideshow-toggle--active' : ''}`}
-              onClick={() => setSlideShow((s) => !s)}
+              onClick={() => setSlideShow((s) => {
+                const next = !s;
+                try { localStorage.setItem(SLIDESHOW_KEY, String(next)); } catch { /* ignored */ }
+                return next;
+              })}
             >
               Slide show
             </button>

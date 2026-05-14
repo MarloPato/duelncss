@@ -1,3 +1,5 @@
+import html2canvas from 'html2canvas';
+
 export function compareCanvases(canvasA, canvasB) {
   const w = canvasA.width;
   const h = canvasA.height;
@@ -34,46 +36,17 @@ export function loadImageToCanvas(src, width, height) {
   });
 }
 
-export function captureIframeToCanvas(iframeEl, width, height) {
-  return new Promise((resolve, reject) => {
-    const doc = iframeEl.contentDocument;
-    if (!doc) {
-      reject(new Error('Cannot access iframe document'));
-      return;
-    }
+export async function captureIframeToCanvas(iframeEl, width, height) {
+  const doc = iframeEl.contentDocument;
+  if (!doc) throw new Error('Cannot access iframe document');
 
-    const serializer = new XMLSerializer();
-    let html = serializer.serializeToString(doc);
-
-    html = html.replace(/xmlns="[^"]*"/g, '');
-    html = `<html xmlns="http://www.w3.org/1999/xhtml">${html.slice(html.indexOf('<head'))}`;
-
-    const svg = `
-      <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
-        <foreignObject width="100%" height="100%">
-          ${html}
-        </foreignObject>
-      </svg>`;
-
-    const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const img = new Image();
-
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0);
-      URL.revokeObjectURL(url);
-      resolve(canvas);
-    };
-
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error('Failed to render SVG foreignObject'));
-    };
-
-    img.src = url;
+  const canvas = await html2canvas(doc.documentElement, {
+    width,
+    height,
+    logging: false,
+    windowWidth: width,
+    windowHeight: height,
   });
+
+  return canvas;
 }

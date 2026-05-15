@@ -1,7 +1,13 @@
 import Editor from '@monaco-editor/react';
 import './CssEditor.css';
 
-export default function CssEditor({ value, onChange, language = 'css' }) {
+interface CssEditorProps {
+  value: string;
+  onChange: (value: string | undefined) => void;
+  language?: 'css' | 'html';
+}
+
+export default function CssEditor({ value, onChange, language = 'css' }: CssEditorProps) {
   return (
     <div className="css-editor">
       {value === '' && (

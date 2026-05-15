@@ -1,10 +1,10 @@
 import html2canvas from 'html2canvas';
 
-export function compareCanvases(canvasA, canvasB) {
+export function compareCanvases(canvasA: HTMLCanvasElement, canvasB: HTMLCanvasElement): number {
   const w = canvasA.width;
   const h = canvasA.height;
-  const ctxA = canvasA.getContext('2d');
-  const ctxB = canvasB.getContext('2d');
+  const ctxA = canvasA.getContext('2d')!;
+  const ctxB = canvasB.getContext('2d')!;
   const dataA = ctxA.getImageData(0, 0, w, h).data;
   const dataB = ctxB.getImageData(0, 0, w, h).data;
   const totalPixels = w * h;
@@ -20,14 +20,14 @@ export function compareCanvases(canvasA, canvasB) {
   return (1 - totalDiff / totalPixels) * 100;
 }
 
-export function loadImageToCanvas(src, width, height) {
+export function loadImageToCanvas(src: string, width: number, height: number): Promise<HTMLCanvasElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement('canvas');
       canvas.width = width;
       canvas.height = height;
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d')!;
       ctx.drawImage(img, 0, 0, width, height);
       resolve(canvas);
     };
@@ -36,7 +36,7 @@ export function loadImageToCanvas(src, width, height) {
   });
 }
 
-export async function captureIframeToCanvas(iframeEl, width, height) {
+export async function captureIframeToCanvas(iframeEl: HTMLIFrameElement, width: number, height: number): Promise<HTMLCanvasElement> {
   const doc = iframeEl.contentDocument;
   if (!doc) throw new Error('Cannot access iframe document');
 

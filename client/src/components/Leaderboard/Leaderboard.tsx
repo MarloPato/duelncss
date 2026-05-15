@@ -1,7 +1,13 @@
 import { useAuth } from '../../hooks/useAuth';
+import type { LeaderboardEntry } from '../../types';
 import './Leaderboard.css';
 
-export default function Leaderboard({ entries, type }) {
+interface LeaderboardProps {
+  entries: LeaderboardEntry[];
+  type: 'overall' | 'challenge';
+}
+
+export default function Leaderboard({ entries, type }: LeaderboardProps) {
   const { user } = useAuth();
 
   return (

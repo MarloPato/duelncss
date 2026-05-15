@@ -1,10 +1,16 @@
 import { useEffect } from 'react';
 import './ScoreOverlay.css';
 
-export default function ScoreOverlay({ score, charCount, onClose }) {
+interface ScoreOverlayProps {
+  score: number | null;
+  charCount: number;
+  onClose: () => void;
+}
+
+export default function ScoreOverlay({ score, charCount, onClose }: ScoreOverlayProps) {
   useEffect(() => {
     if (score === null) return;
-    const handleKey = (e) => {
+    const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', handleKey);

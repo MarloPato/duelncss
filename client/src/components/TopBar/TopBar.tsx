@@ -2,7 +2,15 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import './TopBar.css';
 
-export default function TopBar({ challengeName, score, charCount, onCompare, comparing }) {
+interface TopBarProps {
+  challengeName?: string;
+  score?: number | null;
+  charCount?: number;
+  onCompare?: () => void;
+  comparing?: boolean;
+}
+
+export default function TopBar({ challengeName, score, charCount, onCompare, comparing }: TopBarProps) {
   const { user, logout } = useAuth();
   const isChallenge = !!challengeName;
 
@@ -21,7 +29,7 @@ export default function TopBar({ challengeName, score, charCount, onCompare, com
       <div className="topbar-right">
         {isChallenge && (
           <div className="topbar-stats">
-            {score !== null && (
+            {score !== null && score !== undefined && (
               <span className="topbar-score">{Number(score).toFixed(1)}%</span>
             )}
             <span className="topbar-chars">{charCount} chars</span>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { apiFetch } from '../../api/client';
 import './Auth.css';
@@ -9,17 +9,17 @@ export default function LoginForm() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
     try {
-      const data = await apiFetch('/auth/login', {
+      const data = await apiFetch<{ user: { id: number; username: string }; accessToken: string; refreshToken: string }>('/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email, password }),
       });
       login(data.user, data.accessToken, data.refreshToken);
     } catch (err) {
-      setError(err.message);
+      setError((err as Error).message);
     }
   };
 

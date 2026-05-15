@@ -6,19 +6,20 @@ import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../hooks/useToast';
 import TopBar from '../components/TopBar/TopBar';
 import CssEditor from '../components/Editor/CssEditor';
-import Preview from '../components/Preview/Preview';
+import Preview, { type PreviewHandle } from '../components/Preview/Preview';
 import SlideShow from '../components/SlideShow/SlideShow';
 import ColorPalette from '../components/ColorPalette/ColorPalette';
 import SignInBanner from '../components/SignInBanner/SignInBanner';
 import ConfirmDialog from '../components/ConfirmDialog/ConfirmDialog';
 import Skeleton from '../components/Skeleton/Skeleton';
 import { compareCanvases, loadImageToCanvas, captureIframeToCanvas } from '../scoring/pixelDiff';
+import type { Challenge as ChallengeType, Submission, ScoreInfo } from '../types';
 import './Challenge.css';
 
 const EDITOR_SPLIT_KEY = 'duelncss-editor-split';
 const SLIDESHOW_KEY = 'duelncss-slideshow';
 
-function getSlideShowDefault() {
+function getSlideShowDefault(): boolean {
   try {
     const saved = localStorage.getItem(SLIDESHOW_KEY);
     if (saved !== null) return saved === 'true';
@@ -26,7 +27,7 @@ function getSlideShowDefault() {
   return true;
 }
 
-function getEditorLayout() {
+function getEditorLayout(): [number, number] {
   try {
     const saved = localStorage.getItem(EDITOR_SPLIT_KEY);
     if (saved) return JSON.parse(saved);
@@ -35,22 +36,22 @@ function getEditorLayout() {
 }
 
 export default function Challenge() {
-  const { slug } = useParams();
+  const { slug } = useParams<{ slug: string }>();
   const { user } = useAuth();
   const toast = useToast();
-  const previewRef = useRef(null);
+  const previewRef = useRef<PreviewHandle>(null);
 
-  const [challenge, setChallenge] = useState(null);
+  const [challenge, setChallenge] = useState<ChallengeType | null>(null);
   const [css, setCss] = useState('');
   const [html, setHtml] = useState('');
-  const [lastScore, setLastScore] = useState(null);
-  const [highScore, setHighScore] = useState(null);
+  const [lastScore, setLastScore] = useState<ScoreInfo | null>(null);
+  const [highScore, setHighScore] = useState<ScoreInfo | null>(null);
   const [comparing, setComparing] = useState(false);
   const [slideShow, setSlideShow] = useState(getSlideShowDefault);
-  const [confirmAction, setConfirmAction] = useState(null);
+  const [confirmAction, setConfirmAction] = useState<(() => void) | null>(null);
 
   useEffect(() => {
-    apiFetch(`/challenges/${slug}`).then((c) => {
+    apiFetch<ChallengeType>(`/challenges/${slug}`).then((c) => {
       setChallenge(c);
       setHtml(c.starter_html || '<div></div>');
     });
@@ -58,7 +59,7 @@ export default function Challenge() {
 
   useEffect(() => {
     if (challenge && user) {
-      apiFetch(`/submissions/me/${challenge.id}`).then((sub) => {
+      apiFetch<Submission | null>(`/submissions/me/${challenge.id}`).then((sub) => {
         if (sub) {
           setHighScore({ score: sub.score, chars: sub.char_count });
           setCss(sub.css_code);
@@ -76,6 +77,7 @@ export default function Challenge() {
 
     try {
       const iframe = previewRef.current.getIframe();
+      if (!iframe) throw new Error('Preview iframe not available');
       const [userCanvas, targetCanvas] = await Promise.all([
         captureIframeToCanvas(iframe, challenge.viewport_w, challenge.viewport_h),
         loadImageToCanvas(challenge.target_image, challenge.viewport_w, challenge.viewport_h),
@@ -86,7 +88,7 @@ export default function Challenge() {
       setLastScore({ score: rounded, chars: charCount });
 
       if (user) {
-        const res = await apiFetch('/submissions', {
+        const res = await apiFetch<{ improved: boolean; submission: Submission }>('/submissions', {
           method: 'POST',
           body: JSON.stringify({
             challengeId: challenge.id,
@@ -101,16 +103,16 @@ export default function Challenge() {
         }
       }
 
-      toast(`Match: ${rounded.toFixed(1)}%`, 'success');
+      toast(`Match: ${rounded.toFixed(1)}%`);
     } catch (err) {
-      toast(err.message || 'Compare failed', 'error');
+      toast((err as Error).message || 'Compare failed');
     } finally {
       setComparing(false);
     }
   }, [challenge, css, html, charCount, user, toast]);
 
   useEffect(() => {
-    const handleKeyDown = (e) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
         e.preventDefault();
         handleSubmit();
@@ -125,16 +127,16 @@ export default function Challenge() {
 
     const doLoad = async () => {
       try {
-        const sub = await apiFetch(`/submissions/me/${challenge.id}`);
+        const sub = await apiFetch<Submission | null>(`/submissions/me/${challenge.id}`);
         if (!sub) {
-          toast('No high score found', 'info');
+          toast('No high score found');
           return;
         }
         setCss(sub.css_code);
         if (sub.html_code) setHtml(sub.html_code);
-        toast('Loaded high score code', 'success');
+        toast('Loaded high score code');
       } catch (err) {
-        toast(err.message || 'Failed to load', 'error');
+        toast((err as Error).message || 'Failed to load');
       }
     };
 
@@ -148,9 +150,9 @@ export default function Challenge() {
     }
   }, [challenge, user, css, toast]);
 
-  const handleEditorLayoutChange = (sizes) => {
+  const handleEditorLayoutChange = (layout: Record<string, number>) => {
     try {
-      localStorage.setItem(EDITOR_SPLIT_KEY, JSON.stringify(sizes));
+      localStorage.setItem(EDITOR_SPLIT_KEY, JSON.stringify(layout));
     } catch { /* ignored */ }
   };
 
@@ -184,7 +186,7 @@ export default function Challenge() {
           </div>
           <PanelGroup
             orientation="vertical"
-            onLayout={handleEditorLayoutChange}
+            onLayoutChange={handleEditorLayoutChange}
             className="editor-panels"
           >
             <Panel defaultSize={getEditorLayout()[0]} minSize={20}>

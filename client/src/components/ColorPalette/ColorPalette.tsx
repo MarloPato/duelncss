@@ -1,17 +1,21 @@
 import { useToast } from '../../hooks/useToast';
 import './ColorPalette.css';
 
-export default function ColorPalette({ colors }) {
+interface ColorPaletteProps {
+  colors: string[];
+}
+
+export default function ColorPalette({ colors }: ColorPaletteProps) {
   const toast = useToast();
 
   if (!colors || colors.length === 0) return null;
 
-  const handleCopy = async (hex) => {
+  const handleCopy = async (hex: string) => {
     try {
       await navigator.clipboard.writeText(hex);
-      toast(`Copied ${hex}`, 'success', 2000);
+      toast(`Copied ${hex}`);
     } catch {
-      toast('Failed to copy', 'error');
+      toast('Failed to copy');
     }
   };
 

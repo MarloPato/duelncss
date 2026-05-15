@@ -1,18 +1,21 @@
 const BASE_URL = 'http://localhost:3001/api';
 
-let accessToken = null;
-let onUnauthorized = null;
+let accessToken: string | null = null;
+let onUnauthorized: (() => void) | null = null;
 
-export function setAccessToken(token) {
+export function setAccessToken(token: string | null) {
   accessToken = token;
 }
 
-export function setOnUnauthorized(cb) {
+export function setOnUnauthorized(cb: () => void) {
   onUnauthorized = cb;
 }
 
-export async function apiFetch(path, options = {}) {
-  const headers = { 'Content-Type': 'application/json', ...options.headers };
+export async function apiFetch<T = unknown>(path: string, options: RequestInit = {}): Promise<T> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(options.headers as Record<string, string>),
+  };
   if (accessToken) {
     headers['Authorization'] = `Bearer ${accessToken}`;
   }
@@ -28,5 +31,5 @@ export async function apiFetch(path, options = {}) {
     throw new Error(body.error || `Request failed: ${res.status}`);
   }
 
-  return res.json();
+  return res.json() as Promise<T>;
 }

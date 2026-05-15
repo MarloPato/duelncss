@@ -1,15 +1,21 @@
 import { useEffect, useRef } from 'react';
 import './ConfirmDialog.css';
 
-export default function ConfirmDialog({ message, onConfirm, onCancel }) {
-  const confirmRef = useRef(null);
+interface ConfirmDialogProps {
+  message: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+export default function ConfirmDialog({ message, onConfirm, onCancel }: ConfirmDialogProps) {
+  const confirmRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     confirmRef.current?.focus();
   }, []);
 
   useEffect(() => {
-    const handleKey = (e) => {
+    const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onCancel();
     };
     window.addEventListener('keydown', handleKey);

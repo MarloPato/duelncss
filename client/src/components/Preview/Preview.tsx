@@ -1,8 +1,19 @@
 import { useRef, useImperativeHandle, forwardRef } from 'react';
 import './Preview.css';
 
-const Preview = forwardRef(function Preview({ css, html, viewportW, viewportH }, ref) {
-  const iframeRef = useRef(null);
+interface PreviewProps {
+  css: string;
+  html: string;
+  viewportW: number;
+  viewportH: number;
+}
+
+export interface PreviewHandle {
+  getIframe: () => HTMLIFrameElement | null;
+}
+
+const Preview = forwardRef<PreviewHandle, PreviewProps>(function Preview({ css, html, viewportW, viewportH }, ref) {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useImperativeHandle(ref, () => ({
     getIframe: () => iframeRef.current,

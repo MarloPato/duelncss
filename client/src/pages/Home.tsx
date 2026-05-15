@@ -3,21 +3,22 @@ import { apiFetch } from '../api/client';
 import { useAuth } from '../hooks/useAuth';
 import ChallengeCard from '../components/ChallengeCard/ChallengeCard';
 import Skeleton from '../components/Skeleton/Skeleton';
+import type { ChallengeSummary, SubmissionSummary } from '../types';
 import './Home.css';
 
 export default function Home() {
   const { user } = useAuth();
-  const [challenges, setChallenges] = useState(null);
-  const [bestScores, setBestScores] = useState({});
+  const [challenges, setChallenges] = useState<ChallengeSummary[] | null>(null);
+  const [bestScores, setBestScores] = useState<Record<number, number>>({});
 
   useEffect(() => {
-    apiFetch('/challenges').then(setChallenges);
+    apiFetch<ChallengeSummary[]>('/challenges').then(setChallenges);
   }, []);
 
   useEffect(() => {
     if (user) {
-      apiFetch('/submissions/me').then((rows) => {
-        const map = {};
+      apiFetch<SubmissionSummary[]>('/submissions/me').then((rows) => {
+        const map: Record<number, number> = {};
         for (const r of rows) {
           map[r.challenge_id] = r.score;
         }

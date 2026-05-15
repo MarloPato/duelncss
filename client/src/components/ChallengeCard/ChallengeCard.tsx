@@ -1,7 +1,13 @@
 import { Link } from 'react-router-dom';
+import type { ChallengeSummary } from '../../types';
 import './ChallengeCard.css';
 
-export default function ChallengeCard({ challenge, bestScore }) {
+interface ChallengeCardProps {
+  challenge: ChallengeSummary;
+  bestScore?: number;
+}
+
+export default function ChallengeCard({ challenge, bestScore }: ChallengeCardProps) {
   return (
     <Link to={`/challenge/${challenge.slug}`} className="card">
       <div className="card-thumb">

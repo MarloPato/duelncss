@@ -1,10 +1,11 @@
-import { createContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import { setAccessToken, setOnUnauthorized } from '../api/client';
+import type { User, AuthContextType } from '../types';
 
-export const AuthContext = createContext(null);
+export const AuthContext = createContext<AuthContextType | null>(null);
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   const logout = useCallback(() => {
@@ -42,9 +43,9 @@ export function AuthProvider({ children }) {
       .finally(() => setLoading(false));
   }, []);
 
-  const login = (userData, accessToken, refreshToken) => {
+  const login = (userData: User, accessTokenVal: string, refreshToken: string) => {
     setUser(userData);
-    setAccessToken(accessToken);
+    setAccessToken(accessTokenVal);
     localStorage.setItem('refreshToken', refreshToken);
   };
 

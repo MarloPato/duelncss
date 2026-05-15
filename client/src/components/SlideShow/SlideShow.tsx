@@ -1,13 +1,21 @@
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, type ReactNode } from 'react';
 import './SlideShow.css';
 
-export default function SlideShow({ targetSrc, viewportW, viewportH, children, enabled }) {
-  const containerRef = useRef(null);
-  const userRef = useRef(null);
-  const lineRef = useRef(null);
-  const rafId = useRef(null);
+interface SlideShowProps {
+  targetSrc: string;
+  viewportW: number;
+  viewportH: number;
+  children: ReactNode;
+  enabled: boolean;
+}
 
-  const onMouseMove = useCallback((e) => {
+export default function SlideShow({ targetSrc, viewportW, viewportH, children, enabled }: SlideShowProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const userRef = useRef<HTMLDivElement>(null);
+  const lineRef = useRef<HTMLDivElement>(null);
+  const rafId = useRef<number | null>(null);
+
+  const onMouseMove = useCallback((e: React.MouseEvent) => {
     if (!enabled) return;
     const clientX = e.clientX;
     if (rafId.current) return;
